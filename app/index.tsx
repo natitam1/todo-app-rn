@@ -76,9 +76,18 @@ export default function Index() {
           <View style={styles.todoContainer}>
             <View style={styles.todoInfoContainer}>
               <Checkbox value={item.isDone} />
-              <Text>{item.title}</Text>
+              <Text
+                style={
+                  (styles.todoText,
+                  item.isDone && { textDecorationLine: "line-through" })
+                }
+              >
+                {item.title}
+              </Text>
             </View>
-            <Ionicons name="trash" size={24} color="red" />
+            <TouchableOpacity onPress={() => alert("DELETED")}>
+              <Ionicons name="trash" size={24} color="red" />
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -126,5 +135,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  todoText: {
+    fontSize: 16,
+    color: "#333",
   },
 });
