@@ -144,8 +144,9 @@ export default function Index() {
             alert("Clicked!");
           }}
         >
-          <Ionicons name="menu" size={24} color={"#333"} />
+          <Ionicons name="menu" size={28} color={"#333"} />
         </TouchableOpacity>
+        <Text style={styles.logo}>TNT Planner</Text>
         <TouchableOpacity onPress={() => {}}>
           <Image
             source={require("../assets/images/logo.jpg")}
@@ -296,5 +297,9 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
     marginLeft: 20,
+  },
+  logo: {
+    fontWeight: "bold",
+    fontSize: 20,
   },
 });
