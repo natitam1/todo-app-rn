@@ -7,6 +7,7 @@ import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 type ToDoType = {
   id: number;
   title: string;
@@ -53,8 +55,11 @@ export default function Index() {
       isDone: false,
     },
   ];
-  const [todos, setTodos] = useState<ToDoType[]>(todoData);
+
+  const [todos, setTodos] = useState<ToDoType[]>([]);
   const [todoText, setTodoText] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [oldTodos, setOldTodos] = useState<ToDoType[]>([]);
 
   useEffect(() => {
     const getTodos = async () => {
@@ -62,6 +67,7 @@ export default function Index() {
         const todos = await AsyncStorage.getItem("my-todo");
         if (todos !== null) {
           setTodos(JSON.parse(todos));
+          setOldTodos(JSON.parse(todos));
         }
       } catch (error) {
         console.log(error);
@@ -69,6 +75,7 @@ export default function Index() {
     };
     getTodos();
   }, []);
+
   const addTodo = async () => {
     try {
       const newTodo = {
@@ -78,6 +85,7 @@ export default function Index() {
       };
       todos.push(newTodo);
       setTodos(todos);
+      setOldTodos(todos);
       await AsyncStorage.setItem("my-todo", JSON.stringify(todos));
       setTodoText("");
       Keyboard.dismiss();
@@ -89,44 +97,86 @@ export default function Index() {
   const deleteTodo = async (id: number) => {
     try {
       const newTodos = todos.filter((todo) => todo.id !== id);
-      await AsyncStorage.setItem("my-todos", JSON.stringify(newTodos));
+      await AsyncStorage.setItem("my-todo", JSON.stringify(newTodos));
       setTodos(newTodos);
+      setOldTodos(newTodos);
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleDone = async (id: number) => {
+    try {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === id) {
+          todo.isDone = !todo.isDone;
+        }
+        return todo;
+      });
+      await AsyncStorage.setItem("my-todo", JSON.stringify(newTodos));
+      setTodos(newTodos);
+      setOldTodos(newTodos);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSearch = (query: string) => {
+    if (query == "") {
+      setTodos(oldTodos);
+    } else {
+      const filteredTodos = todos.filter((todo) =>
+        todo.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setTodos(filteredTodos);
+    }
+  };
+
+  useEffect(() => {
+    onSearch(searchQuery);
+  }, [searchQuery]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            alert("We Are Here To Help!");
+            alert("Clicked!");
           }}
         >
-          <Ionicons name="menu" size={37} color={"#333"} />
+          <Ionicons name="menu" size={24} color={"#333"} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}}>
           <Image
-            source={require("../assets/images/logo.jpg")}
+            source={{ uri: "https://xsgames.co/randomusers/avatar.php?g=male" }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.searchBar}>
         <Ionicons name="search" size={24} color={"#333"} />
         <TextInput
           placeholder="Search"
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
           style={styles.searchInput}
           clearButtonMode="always"
         />
       </View>
+
       <FlatList
         data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <ToDoItem todo={item} deleteTodo={deleteTodo} />
+          <ToDoItem
+            todo={item}
+            deleteTodo={deleteTodo}
+            handleDone={handleDone}
+          />
         )}
       />
+
       <KeyboardAvoidingView
         style={styles.footer}
         behavior="padding"
@@ -150,15 +200,18 @@ export default function Index() {
 const ToDoItem = ({
   todo,
   deleteTodo,
+  handleDone,
 }: {
   todo: ToDoType;
   deleteTodo: (id: number) => void;
+  handleDone: (id: number) => void;
 }) => (
   <View style={styles.todoContainer}>
     <View style={styles.todoInfoContainer}>
       <Checkbox
         value={todo.isDone}
-        color={todo.isDone ? "#4630eb" : undefined}
+        onValueChange={() => handleDone(todo.id)}
+        color={todo.isDone ? "#4630EB" : undefined}
       />
       <Text
         style={[
@@ -175,10 +228,11 @@ const ToDoItem = ({
         alert("Deleted " + todo.id);
       }}
     >
-      <Ionicons name="trash" size={24} color="red" />
+      <Ionicons name="trash" size={24} color={"red"} />
     </TouchableOpacity>
   </View>
 );
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -192,13 +246,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchBar: {
-    backgroundColor: "#fff",
     flexDirection: "row",
-    padding: 16,
-    borderRadius: 50,
-    gap: 10,
+    backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: Platform.OS === "ios" ? 16 : 8,
+    borderRadius: 10,
+    gap: 10,
     marginBottom: 20,
   },
   searchInput: {
@@ -207,18 +261,17 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   todoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     backgroundColor: "#fff",
     padding: 16,
     borderRadius: 10,
     marginBottom: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   todoInfoContainer: {
     flexDirection: "row",
-    alignItems: "center",
     gap: 10,
+    alignItems: "center",
   },
   todoText: {
     fontSize: 16,
@@ -228,6 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    bottom: 20,
   },
   newTodoInput: {
     flex: 1,
@@ -238,7 +292,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   addButton: {
-    backgroundColor: "#4630eb",
+    backgroundColor: "#4630EB",
     padding: 8,
     borderRadius: 10,
     marginLeft: 20,
