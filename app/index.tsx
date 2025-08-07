@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Checkbox } from "expo-checkbox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Image,
@@ -53,9 +53,22 @@ export default function Index() {
       isDone: false,
     },
   ];
-  const [todos, setTodos] = useState<ToDoType[]>([]);
+  const [todos, setTodos] = useState<ToDoType[]>(todoData);
   const [todoText, setTodoText] = useState<string>("");
 
+  useEffect(() => {
+    const getTodos = async () => {
+      try {
+        const todos = await AsyncStorage.getItem("my-todos");
+        if (todos !== null) {
+          setTodos(JSON.parse(todos));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getTodos();
+  }, []);
   const addTodo = async () => {
     try {
       const newTodo = {
