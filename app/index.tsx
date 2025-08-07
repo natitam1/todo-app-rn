@@ -59,7 +59,7 @@ export default function Index() {
   useEffect(() => {
     const getTodos = async () => {
       try {
-        const todos = await AsyncStorage.getItem("my-todos");
+        const todos = await AsyncStorage.getItem("my-todo");
         if (todos !== null) {
           setTodos(JSON.parse(todos));
         }
@@ -86,6 +86,15 @@ export default function Index() {
     }
   };
 
+  const deleteTodo = async (id: number) => {
+    try {
+      const newTodos = todos.filter((todo) => todo.id !== id);
+      await AsyncStorage.setItem("my-todos", JSON.stringify(newTodos));
+      setTodos(newTodos);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -114,7 +123,9 @@ export default function Index() {
       <FlatList
         data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ToDoItem todo={item} />}
+        renderItem={({ item }) => (
+          <ToDoItem todo={item} deleteTodo={deleteTodo} />
+        )}
       />
       <KeyboardAvoidingView
         style={styles.footer}
@@ -136,7 +147,13 @@ export default function Index() {
   );
 }
 
-const ToDoItem = ({ todo }: { todo: ToDoType }) => (
+const ToDoItem = ({
+  todo,
+  deleteTodo,
+}: {
+  todo: ToDoType;
+  deleteTodo: (id: number) => void;
+}) => (
   <View style={styles.todoContainer}>
     <View style={styles.todoInfoContainer}>
       <Checkbox
@@ -152,7 +169,12 @@ const ToDoItem = ({ todo }: { todo: ToDoType }) => (
         {todo.title}
       </Text>
     </View>
-    <TouchableOpacity onPress={() => alert("DELETED")}>
+    <TouchableOpacity
+      onPress={() => {
+        deleteTodo(todo.id);
+        alert("Deleted " + todo.id);
+      }}
+    >
       <Ionicons name="trash" size={24} color="red" />
     </TouchableOpacity>
   </View>
