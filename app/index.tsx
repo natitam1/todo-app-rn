@@ -1,9 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Checkbox } from "expo-checkbox";
 import { useState } from "react";
 import {
   FlatList,
   Image,
+  Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
   Text,
@@ -51,17 +53,24 @@ export default function Index() {
       isDone: false,
     },
   ];
-  const [todos, setTodos] = useState<ToDoType[]>(todoData);
+  const [todos, setTodos] = useState<ToDoType[]>([]);
   const [todoText, setTodoText] = useState<string>("");
-  const addTodo = () => {
-    const newTodo = {
-      id: Math.random(),
-      title: todoText,
-      isDone: false,
-    };
-    todos.push(newTodo);
-    setTodos(todos);
-    setTodoText("");
+
+  const addTodo = async () => {
+    try {
+      const newTodo = {
+        id: Math.random(),
+        title: todoText,
+        isDone: false,
+      };
+      todos.push(newTodo);
+      setTodos(todos);
+      await AsyncStorage.setItem("my-todo", JSON.stringify(todos));
+      setTodoText("");
+      Keyboard.dismiss();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -90,7 +99,7 @@ export default function Index() {
         />
       </View>
       <FlatList
-        data={todos.reverse()}
+        data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ToDoItem todo={item} />}
       />
