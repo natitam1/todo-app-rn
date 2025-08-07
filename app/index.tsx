@@ -4,6 +4,7 @@ import {
   Image,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -59,6 +60,14 @@ export default function Index() {
           />
         </TouchableOpacity>
       </View>
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={24} color={"#333"} />
+        <TextInput
+          placeholder="Search"
+          style={styles.searchInput}
+          clearButtonMode="always"
+        />
+      </View>
       <FlatList
         data={todoData}
         keyExtractor={(item) => item.id.toString()}
@@ -83,5 +92,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+  },
+  searchBar: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    padding: 16,
+    borderRadius: 50,
+    gap: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
   },
 });
