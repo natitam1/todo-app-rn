@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 20,
   },
   searchInput: {
     flex: 1,
