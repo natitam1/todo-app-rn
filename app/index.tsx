@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -39,6 +39,10 @@ export default function Index() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="menu" size={24} color={"#333"} />
+        <Image
+          source={require("../assets/images/logo.jpg")}
+          style={{ width: 40, height: 40, borderRadius: 20 }}
+        />
       </View>
       <FlatList
         data={todoData}
