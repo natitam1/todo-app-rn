@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { Checkbox } from "expo-checkbox";
 import {
   FlatList,
   Image,
@@ -72,8 +73,12 @@ export default function Index() {
         data={todoData}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View>
-            <Text>{item.title}</Text>
+          <View style={styles.todoContainer}>
+            <View style={styles.todoInfoContainer}>
+              <Checkbox value={item.isDone} />
+              <Text>{item.title}</Text>
+            </View>
+            <Ionicons name="trash" size={24} color="red" />
           </View>
         )}
       />
@@ -107,5 +112,19 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#333",
+  },
+  todoContainer: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  todoInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
   },
 });
