@@ -91,6 +91,12 @@ export default function Index() {
           </View>
         )}
       />
+      <View style={styles.footer}>
+        <TextInput placeholder="Add New ToDo" style={styles.newTodoInput} />
+        <TouchableOpacity style={styles.addButton} onPress={() => {}}>
+          <Ionicons name="add" size={34} color={"#fff"} />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -139,5 +145,24 @@ const styles = StyleSheet.create({
   todoText: {
     fontSize: 16,
     color: "#333",
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  newTodoInput: {
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 10,
+    fontSize: 16,
+    color: "#333",
+  },
+  addButton: {
+    backgroundColor: "#4630eb",
+    padding: 8,
+    borderRadius: 10,
+    marginLeft: 20,
   },
 });
