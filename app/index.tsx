@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Checkbox } from "expo-checkbox";
+import { useState } from "react";
 import {
   FlatList,
   Image,
@@ -50,6 +51,8 @@ export default function Index() {
       isDone: false,
     },
   ];
+  const [todos, setTodos] = useState<ToDoType[]>(todoData);
+  const [todoText, setTodoText] = useState<string>("");
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -76,7 +79,7 @@ export default function Index() {
         />
       </View>
       <FlatList
-        data={todoData}
+        data={todos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ToDoItem todo={item} />}
       />
@@ -85,7 +88,12 @@ export default function Index() {
         behavior="padding"
         keyboardVerticalOffset={10}
       >
-        <TextInput placeholder="Add New ToDo" style={styles.newTodoInput} />
+        <TextInput
+          placeholder="Add New ToDo"
+          value="todoText"
+          onChange={(text) => setTodoText(text)}
+          style={styles.newTodoInput}
+        />
         <TouchableOpacity style={styles.addButton} onPress={() => {}}>
           <Ionicons name="add" size={34} color={"#fff"} />
         </TouchableOpacity>
