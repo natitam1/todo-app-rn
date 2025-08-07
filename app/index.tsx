@@ -148,7 +148,7 @@ export default function Index() {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}}>
           <Image
-            source={{ uri: "https://xsgames.co/randomusers/avatar.php?g=male" }}
+            source={require("../assets/images/logo.jpg")}
             style={{ width: 40, height: 40, borderRadius: 20 }}
           />
         </TouchableOpacity>
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: Platform.OS === "ios" ? 16 : 8,
-    borderRadius: 10,
+    borderRadius: 50,
     gap: 10,
     marginBottom: 20,
   },
